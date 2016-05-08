@@ -2438,11 +2438,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type) {
 			ditem = mob->setdropitem(md->db->dropitem[i].nameid, 1, it);
 
 			//A Rare Drop Global Announce by Lupus
-			if( mvp_sd && drop_rate <= battle_config.rare_drop_announce ) {
+			if (mvp_sd && drop_rate <= battle_config.rare_drop_announce) {
 				char message[128];
-				sprintf (message, msg_txt(541), mvp_sd->status.name, md->name, it->jname, (float)drop_rate/100);
+				sprintf(message, msg_txt(541), mvp_sd->status.name, md->name, it->jname, (float)drop_rate/100);
 				//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
-				intif->broadcast(message, (int)strlen(message)+1, BC_DEFAULT);
+				clif->broadcast(&mvp_sd->bl, message, (int)strlen(message)+1, BC_DEFAULT, ALL_CLIENT);
 			}
 
 			/* heres the thing we got the feature set up however we're still discussing how to best define the ids,
@@ -2595,7 +2595,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type) {
 						char message[128];
 						sprintf(message, msg_txt(541), mvp_sd->status.name, md->name, data->jname, rate/100.);
 						//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
-						intif->broadcast(message, (int)strlen(message)+1, BC_DEFAULT);
+						clif->broadcast(&mvp_sd->bl, message, (int)strlen(message)+1, BC_DEFAULT, ALL_CLIENT);
 					}
 
 					if((temp = pc->additem(mvp_sd,&item,1,LOG_TYPE_PICKDROP_PLAYER)) != 0) {
