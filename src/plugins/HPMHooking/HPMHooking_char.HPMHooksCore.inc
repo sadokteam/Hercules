@@ -1106,8 +1106,6 @@ struct {
 	struct HPMHookPoint *HP_mapif_account_reg_reply_post;
 	struct HPMHookPoint *HP_mapif_disconnectplayer_pre;
 	struct HPMHookPoint *HP_mapif_disconnectplayer_post;
-	struct HPMHookPoint *HP_mapif_parse_WisToGM_pre;
-	struct HPMHookPoint *HP_mapif_parse_WisToGM_post;
 	struct HPMHookPoint *HP_mapif_parse_Registry_pre;
 	struct HPMHookPoint *HP_mapif_parse_Registry_post;
 	struct HPMHookPoint *HP_mapif_parse_RegistryRequest_pre;
@@ -2493,8 +2491,6 @@ struct {
 	int HP_mapif_account_reg_reply_post;
 	int HP_mapif_disconnectplayer_pre;
 	int HP_mapif_disconnectplayer_post;
-	int HP_mapif_parse_WisToGM_pre;
-	int HP_mapif_parse_WisToGM_post;
 	int HP_mapif_parse_Registry_pre;
 	int HP_mapif_parse_Registry_post;
 	int HP_mapif_parse_RegistryRequest_pre;
