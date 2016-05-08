@@ -60,7 +60,6 @@ struct intif_interface {
 	int (*create_pet)(int account_id, int char_id, short pet_type, short pet_lv, short pet_egg_id,
 	                  short pet_equip, short intimate, short hungry, char rename_flag, char incubate, char *pet_name);
 	int (*main_message) (struct map_session_data* sd, const char* message);
-	int (*wis_message_to_gm) (char *Wisp_name, int permission, char *mes);
 	int (*saveregistry) (struct map_session_data *sd);
 	int (*request_registry) (struct map_session_data *sd, int flag);
 	int (*request_guild_storage) (int account_id, int guild_id);
@@ -131,8 +130,6 @@ struct intif_interface {
 	/* */
 	int (*CheckForCharServer) (void);
 	/* */
-	int (*pWisToGM_sub) (struct map_session_data* sd,va_list va);
-	void (*pWisToGM) (int fd);
 	void (*pRegisters) (int fd);
 	void (*pChangeNameOk) (int fd);
 	void (*pMessageToFD) (int fd);
