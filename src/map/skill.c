@@ -135,7 +135,7 @@ int skill_get_index( uint16 skill_id ) {
 	}
 
 	// validate result
-	if( !skill_id || skill_id >= MAX_SKILL_DB )
+	if( skill_id  <= 0 || skill_id >= MAX_SKILL_DB )
 		return 0;
 
 	return skill_id;
@@ -166,10 +166,11 @@ void skill_chk(uint16* skill_id) {
 } while(0)
 #define skill_glv(lv) min((lv),MAX_SKILL_LEVEL-1)
 // Skill DB
+//FIXME: either follow syntax rules, or turn this to macros [hemagx]
 int skill_get_hit( uint16 skill_id )               { skill_get (skill->dbs->db[skill_id].hit, skill_id); }
 int skill_get_inf( uint16 skill_id )               { skill_get (skill->dbs->db[skill_id].inf, skill_id); }
 int skill_get_ele( uint16 skill_id , uint16 skill_lv )      { Assert_ret(skill_lv > 0); skill_get (skill->dbs->db[skill_id].element[skill_glv(skill_lv-1)], skill_id); }
-int skill_get_nk( uint16 skill_id )                { skill_get (skill->dbs->db[skill_id].nk, skill_id); }
+int skill_get_nk( uint16 skill_id )                { skill_get (skill->dbs->db[skill_id].nk, skill_id); } //bitwise field here, should be uint32 [hemagx]
 int skill_get_max( uint16 skill_id )               { skill_get (skill->dbs->db[skill_id].max, skill_id); }
 int skill_get_range( uint16 skill_id , uint16 skill_lv )    { Assert_ret(skill_lv > 0); skill_get2 (skill->dbs->db[skill_id].range[skill_glv(skill_lv-1)], skill_id, skill_lv); }
 int skill_get_splash( uint16 skill_id , uint16 skill_lv )   { Assert_ret(skill_lv > 0); skill_get2 ( (skill->dbs->db[skill_id].splash[skill_glv(skill_lv-1)]>=0?skill->dbs->db[skill_id].splash[skill_glv(skill_lv-1)]:AREA_SIZE), skill_id, skill_lv);  }
@@ -2175,7 +2176,8 @@ int skill_magic_reflect(struct block_list* src, struct block_list* bl, int type)
  * flag&0x4000 - Return 0 if damage was reflected
  *-------------------------------------------------------------------------*/
 int skill_attack(int attack_type, struct block_list* src, struct block_list *dsrc, struct block_list *bl, uint16 skill_id, uint16 skill_lv, int64 tick, int flag) {
-	struct Damage dmg;
+	struct Damage dmg = { 0 };
+	struct battle_skill_data bd = { 0 };
 	struct status_data *sstatus, *tstatus;
 	struct status_change *sc;
 	struct map_session_data *sd, *tsd;
@@ -2211,6 +2213,14 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			)
 		return 0;
 
+	// Fills the structs for battle to calculate damage
+	bd.skill_id = skill_id;
+	bd.skill_level = skill_lv;
+	bd.skill_flag = flag&0xFFF; // FIXME: is &0xFFF correct here? it also passes flags to battle. [hemagx]
+	bd.attack_type = attack_type;
+	bd.src = src;
+	bd.target = bl;
+
 	sstatus = status->get_status_data(src);
 	tstatus = status->get_status_data(bl);
 	sc = status->get_sc(bl);
@@ -2228,7 +2238,7 @@ int skill_attack(int attack_type, struct block_list* src, struct block_list *dsr
 			return 0;
 	}
 
-	dmg = battle->calc_attack(attack_type,src,bl,skill_id,skill_lv,flag&0xFFF);
+	battle->calc_attack(&bd, &dmg);
 
 	//Skotlex: Adjusted to the new system
 	if (src->type == BL_PET) { // [Valaris]
