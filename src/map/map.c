@@ -4290,7 +4290,7 @@ bool inter_config_read_connection(const char *filename, const struct config_t *c
 	if ((setting = libconfig->lookup(config, "inter_configuration/log/sql_connection")) == NULL) {
 		if (imported)
 			return true;
-		ShowError("inter_config_read: inter_configuration.log.sql_connection was not found in %s!\n", filename);
+		ShowError("inter_config_read: inter_configuration/log/sql_connection was not found in %s!\n", filename);
 		return false;
 	}
 
