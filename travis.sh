@@ -99,8 +99,7 @@ case "$MODE" in
 		make plugin.script_mapquit -j3 || aborterror "Build failed."
 		;;
 	test)
-		# FIXME: Not pretty. We need a way not to overwrite this, but rather override it.
-		cat > conf/global/sql_connection.conf << EOF
+		cat > conf/travis_sql_connection.conf << EOF
 sql_connection: {
 	//default_codepage: ""
 	//case_sensitive: false
@@ -111,7 +110,38 @@ sql_connection: {
 	//codepage:""
 }
 EOF
-		[ $? -eq 0 ] || aborterror "Unable to import configuration, aborting tests."
+		[ $? -eq 0 ] || aborterror "Unable to write database configuration, aborting tests."
+		cat > conf/import/login-server.conf << EOF
+login_configuration: {
+	account: {
+		@include "conf/travis_sql_connection.conf"
+		ipban: {
+			@include "conf/travis_sql_connection.conf"
+		}
+	}
+}
+EOF
+		[ $? -eq 0 ] || aborterror "Unable to override login-server configuration, aborting tests."
+		cat > conf/import/char-server.conf << EOF
+char_configuration: {
+	@include "conf/travis_sql_connection.conf"
+}
+EOF
+		[ $? -eq 0 ] || aborterror "Unable to override char-server configuration, aborting tests."
+		cat > conf/import/map-server.conf << EOF
+map_configuration: {
+	@include "conf/travis_sql_connection.conf"
+}
+EOF
+		[ $? -eq 0 ] || aborterror "Unable to override map-server configuration, aborting tests."
+		cat > conf/import/inter-server.conf << EOF
+inter_configuration: {
+	log: {
+		@include "conf/travis_sql_connection.conf"
+	}
+}
+EOF
+		[ $? -eq 0 ] || aborterror "Unable to override inter-server configuration, aborting tests."
 		ARGS="--load-script npc/dev/test.txt "
 		ARGS="--load-plugin script_mapquit $ARGS --load-script npc/dev/ci_test.txt"
 		PLUGINS="--load-plugin HPMHooking --load-plugin sample"
