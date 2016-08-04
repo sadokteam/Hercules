@@ -790,7 +790,7 @@ int inter_accreg_fromsql(int account_id,int char_id, int fd, int type)
 }
 
 /**
- * Reads the 'char_configuration.sql_connection' config entry and initializes required variables.
+ * Reads the 'char_configuration/sql_connection' config entry and initializes required variables.
  *
  * @param filename Path to configuration file (used in error and warning messages).
  * @param config   The current config being parsed.
